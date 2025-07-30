@@ -4,13 +4,13 @@
 This project utilizes an LSTM model to classify human poses from skeleton data extracted using Mediapipe. The project consists of three main notebooks:
 
 1. **create_data.ipynb**: Generates training data for the LSTM model.
-2. **lstm_.ipynb**: Trains the LSTM model for pose classification.
-3. **rc_lstm.ipynb**: Real-time pose recognition from webcam.
+2. **train_model.py**: Trains the LSTM model for pose classification.
+3. **recog_lstm.py**: Real-time pose recognition from webcam.
 
 ## Environment Setup
 Required libraries:
 ```
-pip install numpy pandas tensorflow keras mediapipe opencv-python
+pip install -r requirements.txt
 ```
 
 ## Usage Guide
@@ -27,13 +27,13 @@ Run `create_data.ipynb` to generate training data:
   - di_lai
 
 ### Step 2: Model Training
-Run `lstm_.ipynb` to train the model:
+Run `train_model.py` to train the model:
 - Ensure the CSV files are correctly located.
 - The trained model will be automatically saved as `best_lstm_model.keras`.
 
 ### Step 3: Real-Time Pose Recognition
-Run `recog_lstm.ipynb`:
-- You need to download this "!wget -O pose_landmarker.task -q https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_heavy/float16/1/pose_landmarker_heavy.task"
+Run `recog_lstm.py`:
+- You need to download this "!wget -O pose_landmarker.task -q https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_heavy/float16/1/pose_landmarker_heavy.task" or download by powershell " Invoke-WebRequest -Uri "https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_heavy/float16/1/pose_landmarker_heavy.task" -OutFile "pose_landmarker_heavy.task" " (make sure you are in the folder with the recog_lstm.py file in powershell)
 - The webcam will be activated for pose recognition.
 - Press `q` to exit.
 
