@@ -1,0 +1,30 @@
+# Python
+.venv/
+.python/
+.uv-cache/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ipynb_checkpoints/
+
+# Node / frontend
+node_modules/
+dist/
+playwright-report/
+test-results/
+*.tsbuildinfo
+.vitest/
+
+# Local environment and logs
+.env
+.env.local
+*.log
+
+# Tooling and editors
+.tools/
+.superpowers/
+docs/superpowers/
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
