@@ -8,7 +8,7 @@ from be.app.inference import ModelRuntime
 def main():
     runtime = ModelRuntime()
     try:
-        for path in sorted((ROOT / 'workplace_dataset').glob('*.csv')):
+        for path in sorted((ROOT / 'data').glob('*.csv')):
             sample = np.loadtxt(path, delimiter=',', skiprows=1, max_rows=10)
             values = runtime.predict(sample)
             print(json.dumps({'sample': path.name, 'label': CLASSES[int(np.argmax(values))],

@@ -1,3 +1,9 @@
+"""Huấn luyện LSTM từ CSV trong data/. Chạy: python ml/train_model.py
+
+Model mới lưu vào ml/output/ để không ghi đè models/best_lstm_model.keras đang dùng.
+"""
+from pathlib import Path
+
 import numpy as np
 import pandas as pd
 from keras.layers import LSTM, Dense, Dropout, Bidirectional
@@ -6,7 +12,10 @@ from keras.callbacks import EarlyStopping, ModelCheckpoint
 from sklearn.model_selection import train_test_split
 
 # Danh sách các file và nhãn tương ứng
-path_data = "workplace_dataset/"
+ROOT = Path(__file__).resolve().parents[1]
+path_data = ROOT / "data"
+OUTPUT_DIR = Path(__file__).resolve().parent / "output"
+OUTPUT_DIR.mkdir(exist_ok=True)
 
 files_labels = {
     "ngoi_lam_viec.csv": 0,
@@ -23,7 +32,7 @@ no_of_timesteps = 10  # Số bước thời gian (sequence length)
 
 # Đọc và xử lý dữ liệu từ mỗi file
 for file, label in files_labels.items():
-    df = pd.read_csv(path_data + file)
+    df = pd.read_csv(path_data / file)
     dataset = df.iloc[:, :].values  # Lấy toàn bộ cột làm input
     n_sample = len(dataset)
     
@@ -54,7 +63,7 @@ model.compile(optimizer="adam", loss="sparse_categorical_crossentropy", metrics=
 
 # EarlyStopping và Checkpoint
 early_stop = EarlyStopping(monitor="val_loss", patience=5, restore_best_weights=True)
-checkpoint = ModelCheckpoint("best_lstm_model.keras", save_best_only=True)
+checkpoint = ModelCheckpoint(str(OUTPUT_DIR / "best_lstm_model.keras"), save_best_only=True)
 
 # Huấn luyện mô hình
 model.fit(X_train, y_train, epochs=50, batch_size=32, validation_data=(X_test, y_test), callbacks=[early_stop, checkpoint])
@@ -64,6 +73,6 @@ loss, accuracy = model.evaluate(X_test, y_test)
 print(f"Độ chính xác: {accuracy * 100:.2f}%")
 
 # Lưu mô hình
-model.save("lstm_pose_model.keras")
+model.save(OUTPUT_DIR / "lstm_pose_model.keras")
 
 print("Huấn luyện xong và đã lưu model!")

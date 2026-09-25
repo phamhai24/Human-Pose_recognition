@@ -7,15 +7,13 @@ Demo nhận diện hành động với **React/TypeScript (FE)** và **FastAPI +
 ## Cấu trúc thư mục
 
 ```text
-be/                 Backend FastAPI: nạp model, tracking, WebSocket, tests
-fe/                 Frontend React + TypeScript + Vite, unit test và Playwright E2E
-scripts/            Script PowerShell khởi động BE/FE
-model_weight/       Trọng số LSTM (best_lstm_model.keras)
-recognition_lstm/   MediaPipe pose_landmarker_heavy.task và script nhận diện gốc
-workplace_dataset/  Dữ liệu CSV sáu hành động
-create_dataset/     Notebook tạo dữ liệu
-train_model.py      Script huấn luyện gốc
-docs/               Ảnh giao diện và báo cáo kiểm chứng
+be/       Backend FastAPI: nạp model, tracking, WebSocket, tests
+fe/       Frontend React + TypeScript + Vite, unit test và Playwright E2E
+ml/       Pipeline gốc: thu thập dữ liệu, huấn luyện, nhận diện OpenCV
+models/   best_lstm_model.keras (LSTM) và pose_landmarker_heavy.task (MediaPipe)
+data/     Dữ liệu CSV sáu hành động (33 landmark × x, y, z, visibility)
+scripts/  Script PowerShell khởi động BE/FE
+docs/     Ảnh giao diện và báo cáo kiểm chứng
 ```
 
 ## Chạy demo trên Windows
@@ -58,8 +56,8 @@ npm.cmd ci
 
 Nếu `py` không tìm thấy Python 3.11, dùng đường dẫn đầy đủ tới Python 3.11 để tạo venv. Hai asset bắt buộc:
 
-- `model_weight/best_lstm_model.keras`
-- `recognition_lstm/pose_landmarker_heavy.task`
+- `models/best_lstm_model.keras`
+- `models/pose_landmarker_heavy.task`
 
 Backend tính đường dẫn từ repo root. Asset MediaPipe có thể tải từ [kho model chính thức](https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_heavy/float16/1/pose_landmarker_heavy.task).
 
@@ -125,8 +123,16 @@ npx.cmd playwright test
 - Video phân tích khi phát, không phải offline toàn bộ frame; xử lý chậm sẽ bỏ qua frame ở giữa.
 - TensorFlow/MediaPipe cũ có thể in cảnh báo deprecation; kiểm tra health/log để phân biệt lỗi.
 
-## Pipeline gốc
+## Pipeline gốc (`ml/`)
 
-Giữ `create_dataset/`, `workplace_dataset/`, `train_model.py`, `recognition_lstm/` và trọng số. Entry point demo mới là `fe/` + `be/`. `requirements.txt` gốc dành cho pipeline cũ; dùng `be/requirements-dev.txt` cho ứng dụng mới. Train/notebook cần pandas/scikit-learn trong môi trường riêng hoặc cài bổ sung. Không ghi đè model đang dùng khi huấn luyện thử.
+Các script chạy từ repo root, dùng môi trường riêng cài `ml/requirements.txt` (cần pandas/scikit-learn, khác bộ dependencies của `be/`).
+
+```powershell
+python ml/collect_data.py      # Webcam: phím 1–6 ghi hành động, SPACE dừng, Q thoát; append vào data/*.csv
+python ml/train_model.py       # Huấn luyện Bidirectional LSTM, lưu vào ml/output/
+python ml/recognize_webcam.py  # Nhận diện realtime bằng cửa sổ OpenCV, Q để thoát
+```
+
+`collect_data.py` được chuyển từ notebook `create_dataset/create_data.ipynb` cũ. Model huấn luyện mới lưu ở `ml/output/` (không commit) để không ghi đè `models/best_lstm_model.keras` đang dùng; muốn dùng thì chép đè thủ công.
 
 Tham khảo: [TensorFlow](https://www.tensorflow.org/install/source), [Vite](https://vite.dev/guide/), [MediaPipe Pose Landmarker](https://ai.google.dev/edge/mediapipe/solutions/vision/pose_landmarker).

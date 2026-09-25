@@ -1,3 +1,6 @@
+"""Nhận diện hành động realtime bằng OpenCV (bản gốc). Chạy: python ml/recognize_webcam.py"""
+from pathlib import Path
+
 import cv2
 import mediapipe as mp
 import numpy as np
@@ -7,10 +10,11 @@ from mediapipe import solutions
 from mediapipe.framework.formats import landmark_pb2
 
 # Load model đã train
-model = tf.keras.models.load_model(r"model_weight/best_lstm_model.keras")
+ROOT = Path(__file__).resolve().parents[1]
+model = tf.keras.models.load_model(ROOT / "models/best_lstm_model.keras")
 
 # Khởi tạo Pose Landmarker API
-base_options = mp.tasks.BaseOptions(model_asset_path=r"recognition_lstm/pose_landmarker_heavy.task")
+base_options = mp.tasks.BaseOptions(model_asset_path=str(ROOT / "models/pose_landmarker_heavy.task"))
 options = mp.tasks.vision.PoseLandmarkerOptions(
     base_options=base_options,
     num_poses=2,  # Nhận diện tối đa 2 người
