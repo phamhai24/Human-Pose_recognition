@@ -34,7 +34,7 @@ Nếu PowerShell chặn script, chạy trực tiếp:
 
 ```powershell
 # Terminal 1, tại repo root
-.\.venv\Scripts\python.exe -m uvicorn be.app.main:app --host 127.0.0.1 --port 8000 --ws-max-size 2097152 --ws-max-queue 1
+.\venv\Scripts\python.exe -m uvicorn be.app.main:app --host 127.0.0.1 --port 8000 --ws-max-size 2097152 --ws-max-queue 1
 
 # Terminal 2
 cd fe
@@ -48,8 +48,8 @@ Cần **Python 3.11** và **Node.js 22.12+ hoặc 24 LTS**. Model lưu bằng Ke
 ```powershell
 git clone https://github.com/phamhai24/Human-Pose_recognition.git
 cd Human-Pose_recognition
-py -3.11 -m venv .venv
-.\.venv\Scripts\python.exe -m pip install -r be/requirements-dev.txt
+py -3.11 -m venv venv
+.\venv\Scripts\python.exe -m pip install -r be/requirements-dev.txt
 cd fe
 npm.cmd ci
 ```
@@ -93,23 +93,23 @@ Vite dev/preview proxy `/api` tới `127.0.0.1:8000`. Tùy chọn `VITE_API_URL`
 
 ## Kiểm thử
 
-```powershell
-# Repo root
-.\.venv\Scripts\python.exe -m pytest be/tests -q
-.\.venv\Scripts\python.exe -m be.scripts.smoke_model
+Một lệnh chạy tất cả, tại repo root:
 
-# Trong fe/
-npm.cmd test
-npm.cmd run build
-npx.cmd playwright install chromium
-npx.cmd playwright test
+```powershell
+.\scripts\test.ps1          # pytest BE, smoke model thật, Vitest FE, build
+.\scripts\test.ps1 -E2E     # thêm Playwright: tự bật BE/FE nếu chưa chạy, test xong tự tắt
+.\scripts\test.ps1 -E2E -Video C:\path\to\clip.mp4   # dùng video khác cho test nhận diện
 ```
 
-Playwright cần FE và BE đang chạy. Test video thật cần biến môi trường trỏ tới video có người:
+Cuối cùng in bảng PASS/FAIL từng bước; exit code khác 0 nếu có bước lỗi. Log server khi chạy E2E nằm ở `fe/test-results/`. Script tìm venv ở `venv/` hoặc `.venv/`.
+
+Chạy từng bước thủ công:
 
 ```powershell
-$env:POSE_TEST_VIDEO = 'C:\path\to\sample.mp4'
-npx.cmd playwright test
+.\venv\Scripts\python.exe -m pytest be/tests -q
+.\venv\Scripts\python.exe -m be.scripts.smoke_model
+cd fe; npm.cmd test; npm.cmd run build
+npx.cmd playwright test   # cần BE + FE đang chạy; đặt $env:POSE_TEST_VIDEO để test video
 ```
 
 Ảnh kiểm thử ở `fe/test-results/` (không commit). Kết quả kiểm chứng gần nhất: [docs/verification.md](docs/verification.md). Xem production build bằng `npm.cmd run preview`, mở `http://127.0.0.1:4173`.
